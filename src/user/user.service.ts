@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import * as bcryptjs from 'bcryptjs';
 import { UserRepository } from './user.repository';
 
 @Injectable()
@@ -11,11 +12,24 @@ private readonly userRepository: UserRepository
   ){}
 
   async create(createUserDto: CreateUserDto) {
-    console.log('bateu com isso aqui', createUserDto);
-    let oi = await this.userRepository.createUser(createUserDto);
-    console.log('opa sera', oi);
+
+    if (!createUserDto.acceptedTerms) {
+      throw new HttpException("You must accept the terms to register", 401);
+    }
     
-    return oi;
+    createUserDto.password = bcryptjs.hashSync(createUserDto.password, bcryptjs.genSaltSync(10));
+
+    let checkEmail = await this.getUserByEmail(createUserDto.email);
+
+    if (checkEmail != null) {
+      throw new HttpException("EMAIL_ALREADY_EXISTS", 401);
+    }
+
+    let user = await this.userRepository.createUser(createUserDto);
+
+    delete user.password;
+
+    return user;
   }
 
   async findAll() {
