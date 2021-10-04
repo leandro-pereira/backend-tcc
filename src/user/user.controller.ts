@@ -1,10 +1,11 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpException } from '@nestjs/common';
 import { UserService } from './user.service';
-import { CreateUserDto } from './dto/create-user.dto';
+import { CreateUserDto, UserLoginDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { HttpResponseDto } from 'src/config/http-response.dto';
-import { ApiResponse, ApiParam, ApiTags } from '@nestjs/swagger';
+import { ApiResponse, ApiParam, ApiTags, ApiOperation, ApiBody } from '@nestjs/swagger';
 import { AuthService } from '../auth/auth.service';
+import { ErrorHandling } from 'src/config/error-handling';
 // import { AuthGuard } from '@nestjs/passport';
 // import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
@@ -64,4 +65,30 @@ export class UserController {
   remove(@Param('id') id: string) {
     return this.userService.remove(+id);
   }
+
+  @ApiTags('user')
+  @ApiOperation({ summary: 'Login' })
+  @ApiBody({ type: UserLoginDto })
+  @ApiResponse({ status: 200, description: 'Successfully logged in ', type: UserLoginDto })
+  @ApiResponse({ status: 400, description: 'Bad Request', type: HttpResponseDto })
+  @ApiResponse({ status: 403, description: 'Forbidden', type: HttpResponseDto })
+  @ApiResponse({ status: 500, description: "Internal Server Error", type: HttpResponseDto })
+  @Post('/login')
+  @HttpCode
+  (200)
+  async login(@Body() loginData : UserLoginDto) {
+      try {
+        console.log('chegou');
+        
+          if (!loginData) {
+              throw new HttpException({ status: 400, error: "Invalid Body" }, 400);
+          }
+
+          return this.authService.validateUser(loginData.email, loginData.password);
+
+      } catch (error) {
+          new ErrorHandling(error);
+      }
+  }
+
 }

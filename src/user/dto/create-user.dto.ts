@@ -18,3 +18,15 @@ export class CreateUserDto {
     acceptedTerms : boolean;
 
 }
+
+export class UserLoginDto {
+
+    @ApiProperty({ required: true })
+    @IsNotEmpty()
+    email : string;
+  
+    @ApiProperty({ required: true })
+    @IsNotEmpty()
+    password : string;
+  
+}
