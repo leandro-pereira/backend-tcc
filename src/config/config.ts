@@ -1,5 +1,6 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { User } from 'src/user/entities/user.entity';
+import { Publication } from 'src/publication/entities/publication.entity';
 
 require('dotenv').config();
 
@@ -20,20 +21,18 @@ class ConfigService {
       return this;
     }
   
-
-
-  
     public getTypeOrmConfig(): TypeOrmModuleOptions {
       return {
         type: 'mysql',
-        host: this.getValue('HOST'),
-        port: +this.getValue('PORT'),
-        username: this.getValue('USER'),
-        password: this.getValue('PASSWORD'),
-        database: this.getValue('DATABASE'),
+        host: this.getValue('DBHOST'),
+        port: +this.getValue('DBPORT'),
+        username: this.getValue('DBUSER'),
+        password: this.getValue('DBPASSWORD'),
+        database: this.getValue('DBDATABASE'),
         synchronize: true,
         entities: [
-          User
+          User,
+          Publication
         ],
         migrationsTableName: 'migration',
         migrations: ['src/migration/*.ts'],
@@ -45,11 +44,11 @@ class ConfigService {
   }
   
   const configService = new ConfigService(process.env).ensureValues([
-    'HOST',
-    'PORT',
-    'USER',
-    'PASSWORD',
-    'DATABASE'
+    'DBHOST',
+    'DBPORT',
+    'DBUSER',
+    'DBPASSWORD',
+    'DBDATABASE'
   ]);
   
   export { configService };

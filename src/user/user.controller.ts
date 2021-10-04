@@ -3,12 +3,19 @@ import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { HttpResponseDto } from 'src/config/http-response.dto';
-import { ApiResponse } from '@nestjs/swagger';
+import { ApiResponse, ApiParam, ApiTags } from '@nestjs/swagger';
+import { AuthService } from '../auth/auth.service';
+// import { AuthGuard } from '@nestjs/passport';
+// import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly authService : AuthService,
+    private readonly userService: UserService
+  ) {}
 
+  @ApiTags('user')
   @ApiResponse({ status: 200, description: 'Successfully registered', type: CreateUserDto })
   @ApiResponse({ status: 400, description: 'Bad Request', type: HttpResponseDto})
   @ApiResponse({ status: 403, description: 'Forbidden', type: HttpResponseDto })
@@ -18,6 +25,7 @@ export class UserController {
     return this.userService.create(createUserDto);
   }
 
+  @ApiTags('user')
   @ApiResponse({ status: 200, type: CreateUserDto })
   @ApiResponse({ status: 400, description: 'Bad Request', type: HttpResponseDto})
   @ApiResponse({ status: 403, description: 'Forbidden', type: HttpResponseDto })
@@ -27,6 +35,7 @@ export class UserController {
     return this.userService.findAll();
   }
 
+  @ApiTags('user')
   @ApiResponse({ status: 200, type: CreateUserDto })
   @ApiResponse({ status: 400, description: 'Bad Request', type: HttpResponseDto})
   @ApiResponse({ status: 403, description: 'Forbidden', type: HttpResponseDto })
@@ -36,6 +45,7 @@ export class UserController {
     return this.userService.findOne(+id);
   }
 
+  @ApiTags('user')
   @ApiResponse({ status: 200, type: CreateUserDto })
   @ApiResponse({ status: 400, description: 'Bad Request', type: HttpResponseDto})
   @ApiResponse({ status: 403, description: 'Forbidden', type: HttpResponseDto })
@@ -45,6 +55,7 @@ export class UserController {
     return this.userService.update(+id, updateUserDto);
   }
 
+  @ApiTags('user')
   @ApiResponse({ status: 200, type: CreateUserDto })
   @ApiResponse({ status: 400, description: 'Bad Request', type: HttpResponseDto})
   @ApiResponse({ status: 403, description: 'Forbidden', type: HttpResponseDto })

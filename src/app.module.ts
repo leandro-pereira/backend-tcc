@@ -5,6 +5,8 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { configService } from './config/config';
 import { UserModule } from './user/user.module';
+import { PublicationModule } from './publication/publication.module';
+import { AuthModule } from './auth/auth.module';
 
 
 
@@ -13,6 +15,8 @@ import { UserModule } from './user/user.module';
     ScheduleModule.forRoot(),
     TypeOrmModule.forRoot(configService.getTypeOrmConfig()),
     UserModule,
+    PublicationModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

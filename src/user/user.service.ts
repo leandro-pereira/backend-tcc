@@ -20,9 +20,12 @@ private readonly userRepository: UserRepository
 
   async findAll() {
     let oi = await this.userRepository.findAllUser();
-    console.log(oi,'pegou algo?');
-    
+    console.log(oi,' pegou algo?');
     return oi;
+  }
+
+  async getUserByEmail(email : string) {
+    return await this.userRepository.getUserByEmail(email);
   }
 
   findOne(id: number) {
