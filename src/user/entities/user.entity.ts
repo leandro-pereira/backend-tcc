@@ -22,11 +22,23 @@ export class User  extends BaseEntity {
     @Column({ nullable: false, type: 'varchar' })
     email : string;
 
+    @Column({ nullable: false, name: 'id_istagram', type: 'varchar' })
+    idIstagram : string;
+
     @Column({ nullable: false, type: 'varchar' })
     password : string;
 
-    @Column({ nullable: true, type: 'date' })
+    @Column({ nullable: false, type: 'varchar' })
+    tel : string;
+
+    @Column({ nullable: false, type: 'date' })
     birthdate : Date;
+
+    @Column({ nullable: false, name: 'is_business', type: 'boolean' })
+    isBusiness : boolean;
+
+    @Column({ nullable: true, type: 'varchar' })
+    description
 
     @Column({ nullable: true, name: 'photo_url', type: 'varchar' })
     photoUrl : string;
