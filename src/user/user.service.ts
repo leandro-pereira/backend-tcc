@@ -1,14 +1,16 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { UserPasswordUpdateDto, UserPhotoUrlUpdateDto } from './dto/update-user.dto';
 import * as bcryptjs from 'bcryptjs';
 import { UserRepository } from './user.repository';
+import { FileUploadService } from 'src/file-upload/file-upload.service';
 
 @Injectable()
 export class UserService {
 
   constructor(
-private readonly userRepository: UserRepository
+    private readonly filesUploadService : FileUploadService,
+    private readonly userRepository: UserRepository
   ){}
 
   async create(createUserDto: CreateUserDto) {
@@ -46,8 +48,22 @@ private readonly userRepository: UserRepository
     return `This action returns a #${id} user`;
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
+  update(id: number) {
     return `This action updates a #${id} user`;
+  }
+
+  async updateImageProfile(updateUserDto: UserPhotoUrlUpdateDto, image) {
+    
+    if (image != null) {
+      let fileUrl = await this.filesUploadService.uploadFileToS3(image.buffer, image.originalname, updateUserDto.id);
+      updateUserDto.photoUrl = fileUrl;
+    }
+    
+    return await this.userRepository.updateImageProfile(updateUserDto);
+  }
+
+  async updatePassword(updateUserDto: UserPasswordUpdateDto) {
+    return await this.userRepository.updatePassword(updateUserDto);
   }
 
   remove(id: number) {

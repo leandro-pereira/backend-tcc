@@ -41,4 +41,12 @@ export class UserRepository extends Repository<User>{
         return (user && user.length ? user[0] : null);
     }
 
+    async updateImageProfile(userData) {
+        return await this.save(userData);
+    }
+
+    async updatePassword(userData) {
+        return await this.save(userData);
+    }
+
 }

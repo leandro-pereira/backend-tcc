@@ -1,11 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpException, Query, UploadedFile, Req, UseInterceptors } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto, UserLoginDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { UserPasswordUpdateDto, UserPhotoUrlUpdateDto } from './dto/update-user.dto';
 import { HttpResponseDto } from 'src/config/http-response.dto';
-import { ApiResponse, ApiParam, ApiTags, ApiOperation, ApiBody } from '@nestjs/swagger';
+import { ApiResponse, ApiParam, ApiTags, ApiOperation, ApiBody, ApiConsumes } from '@nestjs/swagger';
 import { AuthService } from '../auth/auth.service';
 import { ErrorHandling } from 'src/config/error-handling';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { memoryStorage } from 'multer';
+
 // import { AuthGuard } from '@nestjs/passport';
 // import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
@@ -47,13 +50,29 @@ export class UserController {
   }
 
   @ApiTags('user')
+  @ApiResponse({ status: 200 })
+  @ApiResponse({ status: 400, description: 'Bad Request', type: HttpResponseDto})
+  @ApiResponse({ status: 403, description: 'Forbidden', type: HttpResponseDto })
+  @ApiResponse({ status: 500, description: "Internal Server Error", type: HttpResponseDto })
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(FileInterceptor('image', {
+    storage: memoryStorage(),
+  }))
+  @Post('/update-photo')
+  updatePhoto(@Body() { user }, @UploadedFile() image) {
+    let userData = JSON.parse(user);
+
+    return this.userService.updateImageProfile(userData, image);
+  }
+
+  @ApiTags('user')
   @ApiResponse({ status: 200, type: CreateUserDto })
   @ApiResponse({ status: 400, description: 'Bad Request', type: HttpResponseDto})
   @ApiResponse({ status: 403, description: 'Forbidden', type: HttpResponseDto })
   @ApiResponse({ status: 500, description: "Internal Server Error", type: HttpResponseDto })
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(+id, updateUserDto);
+  @Patch('/update-password')
+  updatePassword(@Body() updateUser: UserPasswordUpdateDto) {
+    return this.userService.updatePassword(updateUser);
   }
 
   @ApiTags('user')
