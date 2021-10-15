@@ -63,7 +63,15 @@ export class UserService {
   }
 
   async updatePassword(updateUserDto: UserPasswordUpdateDto) {
-    return await this.userRepository.updatePassword(updateUserDto);
+    let user = await this.userRepository.findOne({id: updateUserDto.id});
+    
+    if (await bcryptjs.compare(updateUserDto.password, user.password)) {  
+      user.password = bcryptjs.hashSync(updateUserDto.newPassword, bcryptjs.genSaltSync(10));
+      await this.userRepository.updatePassword(user);
+      return 'user atualized'
+    }
+
+    throw new HttpException({ status: 403, error: "User Not Authorized" }, 403);
   }
 
   remove(id: number) {

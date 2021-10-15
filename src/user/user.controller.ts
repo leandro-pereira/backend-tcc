@@ -97,9 +97,8 @@ export class UserController {
   (200)
   async login(@Body() loginData : UserLoginDto) {
       try {
-        console.log('chegou');
-        
-          if (!loginData) {
+
+        if (!loginData) {
               throw new HttpException({ status: 400, error: "Invalid Body" }, 400);
           }
 
